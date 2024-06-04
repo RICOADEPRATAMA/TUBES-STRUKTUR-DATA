@@ -1,25 +1,15 @@
-# TUBES
-
-
-
-
-
-
-
-
-
-
 #include <iostream>
-
 using namespace std;
 
 const int JUMLAH_TRIBUN = 4;
 
+// struct (ini agar menyatu dengan array)
 struct Tribun {
     string nama;
     int harga;
 };
 
+// array
 Tribun daftarTribun[JUMLAH_TRIBUN] = {
     {"TRIBUN BARAT (VIP)", 100000},
     {"TRIBUN UTARA (REGULER)", 50000},
@@ -37,7 +27,7 @@ void inputUmur(int &umur) {
     cin >> umur;
 }
 
-void printTicket(string nama, int umur, int tribun, int zona, int metodepembayaran, int print, int jumlahTiket) {
+void printTicket(string nama, int umur, int tribun, int zona, int metodepembayaran, int print, int jumlahTiket, int kursi, string metodeBayarDetail) {
     int hargaTiket = 0;
 
     if (print == 1) {
@@ -71,6 +61,7 @@ void printTicket(string nama, int umur, int tribun, int zona, int metodepembayar
         cout << endl;
 
         cout << "ZONA : " << zona << endl;
+        cout << "KURSI : " << kursi << endl;
         cout << "METODE PEMBAYARAN : ";
 
         switch (metodepembayaran) {
@@ -78,10 +69,8 @@ void printTicket(string nama, int umur, int tribun, int zona, int metodepembayar
                 cout << "Cash (Silahkan bayar di tempat)";
                 break;
             case 2:
-                cout << "Transfer (Pilih bank berikut)";
-                break;
             case 3:
-                cout << "e-Wallet (Pilih layanan berikut)";
+                cout << metodeBayarDetail;
                 break;
             default:
                 cout << "Tidak Valid";
@@ -99,7 +88,7 @@ void printTicket(string nama, int umur, int tribun, int zona, int metodepembayar
     }
 }
 
-void pilihZona(int tribun, int &zona) {
+void pilihZona(int tribun, int &zona, int &kursi) {
     cout << "===========SILAHKAN PILIH ZONA===========" << endl;
     for (int i = 1; i <= 4; ++i) {
         cout << i << ". ZONA " << i << endl;
@@ -109,24 +98,29 @@ void pilihZona(int tribun, int &zona) {
     cin >> zona;
     cout << "-------------------------------------------" << endl;
 
-    if (tribun == 1 && zona <=4) {
+// perulangan nested loop
+    if (tribun == 1 && zona <= 4) {
         int kursi1 = 0;
         cout << "PILIHAN KURSI VIP: " << endl;
         for (int i = 0; i < 7; i++) {
             for (int j = 0; j < 15; j++) {
-                if (kursi1 <= 105) {
+                if (kursi1 < 105) {
                     cout << kursi1 + 1 << '\t';
                     kursi1++;
                 }
             }
+            cout << endl;
         }
-         cout << "-------------------------------------------" << endl;
-                cout << "Pilih Nomor Posisi kursi : ";
-                cin >> kursi1;
-                cout << "-------------------------------------------" << endl;
-                cout << endl;
+        cout << "-------------------------------------------" << endl;
+        cout << "Pilih Nomor Posisi kursi : ";
+        cin >> kursi;
+        cout << "-------------------------------------------" << endl;
+        cout << endl;
+    } else {
+        kursi = -1; // Tidak perlu memilih kursi untuk tribun reguler
     }
 }
+
 void pilihTribun(int &tribun) {
     cout << "===========SILAHKAN PILIH TRIBUN===========" << endl;
 
@@ -144,7 +138,7 @@ void pilihTribun(int &tribun) {
     }
 }
 
-void pilihMetodePembayaran(int &metodebayar) {
+void pilihMetodePembayaran(int &metodebayar, string &metodeBayarDetail) {
     cout << "=========== PILIH METODE PEMBAYARAN ===========" << endl;
     cout << "1. Cash" << endl;
     cout << "2. Transfer" << endl;
@@ -153,9 +147,26 @@ void pilihMetodePembayaran(int &metodebayar) {
     cout << "Pilih Nomor Posisi Metode Pembayaran : ";
     cin >> metodebayar;
     cout << "---------------------------------------------" << endl;
+
+    switch (metodebayar) {
+        case 2:
+            pilihBank(metodeBayarDetail);
+            break;
+        case 3:
+            pilihEWallet(metodeBayarDetail);
+            break;
+        case 1:
+            metodeBayarDetail = "Cash (Silahkan bayar di tempat)";
+            break;
+        default:
+            cout << "Metode Pembayaran Tidak Valid" << endl;
+            metodeBayarDetail = "Tidak Valid";
+            break;
+    }
 }
 
-void pilihBank(int &bank) {
+void pilihBank(string &bankDetail) {
+    int bank;
     cout << "=========== PILIH BANK ===========" << endl;
     cout << "1. BNI" << endl;
     cout << "2. BRI" << endl;
@@ -164,9 +175,25 @@ void pilihBank(int &bank) {
     cout << "Pilih Nomor Posisi Bank : ";
     cin >> bank;
     cout << "----------------------------------" << endl;
+
+    switch (bank) {
+        case 1:
+            bankDetail = "Transfer (BNI)";
+            break;
+        case 2:
+            bankDetail = "Transfer (BRI)";
+            break;
+        case 3:
+            bankDetail = "Transfer (BCA)";
+            break;
+        default:
+            bankDetail = "Transfer (Tidak Valid)";
+            break;
+    }
 }
 
-void pilihEWallet(int &eWallet) {
+void pilihEWallet(string &eWalletDetail) {
+    int eWallet;
     cout << "=========== PILIH LAYANAN e-WALLET ===========" << endl;
     cout << "1. Gopay" << endl;
     cout << "2. Dana" << endl;
@@ -175,11 +202,26 @@ void pilihEWallet(int &eWallet) {
     cout << "Pilih Nomor Posisi e-Wallet : ";
     cin >> eWallet;
     cout << "---------------------------------------------" << endl;
+
+    switch (eWallet) {
+        case 1:
+            eWalletDetail = "e-Wallet (Gopay)";
+            break;
+        case 2:
+            eWalletDetail = "e-Wallet (Dana)";
+            break;
+        case 3:
+            eWalletDetail = "e-Wallet (Akulaku)";
+            break;
+        default:
+            eWalletDetail = "e-Wallet (Tidak Valid)";
+            break;
+    }
 }
 
 int main() {
-    int umur, jadwal, tribun, zona, print, metodebayar, bank, eWallet, jumlahTiket;
-    string nama;
+    int umur, jadwal, tribun, zona, print, metodebayar, jumlahTiket, kursi;
+    string nama, metodeBayarDetail;
 
     char pesanLagi;
 
@@ -202,28 +244,13 @@ int main() {
             cin >> jadwal;
             cout << "-----------------------------------------------" << endl;
 
-            if ((jadwal <= 1) && (jadwal >= 1)) {
-                cout << "========MAN. CITY VS BAYERN MUNCHEN========" << endl;
+            if ((jadwal == 1) || (jadwal == 2)) {
+                cout << (jadwal == 1 ? "========MAN. CITY VS BAYERN MUNCHEN========" : "========REAL MADRID VS MAN. UNITED========") << endl;
                 pilihTribun(tribun);
                 cout << "Masukkan Jumlah Tiket: ";
                 cin >> jumlahTiket;
-                pilihZona(tribun, zona);
-                pilihMetodePembayaran(metodebayar);
-
-                switch (metodebayar) {
-                    case 1:
-                        break;
-                    case 2:
-                        pilihBank(bank);
-                        break;
-                    case 3:
-                        pilihEWallet(eWallet);
-                        break;
-                    default:
-                        cout << "Metode Pembayaran Tidak Valid" << endl;
-                        return 1;
-                }
-
+                pilihZona(tribun, zona, kursi);
+                pilihMetodePembayaran(metodebayar, metodeBayarDetail);
 
                 cout << "-------------------------------------------\n";
 
@@ -234,22 +261,7 @@ int main() {
                 cin >> print;
                 cout << "-------------------------------------------\n";
 
-                printTicket(nama, umur, tribun, zona, metodebayar, print, jumlahTiket);
-            } else if ((jadwal <= 2) && (jadwal >= 2)) {
-                cout << "========REAL MADRDID VS MAN. UNITED========" << endl;
-                pilihTribun(tribun);
-                pilihZona(tribun, zona);
-
-                cout << "-------------------------------------------\n";
-
-                cout << "=======APAKAH ANDA INGIN PRINT TIKET?=======" << endl;
-                cout << "1.YA\n";
-                cout << "2.TIDAK\n";
-                cout << "-------------------------------------------\n";
-                cin >> print;
-                cout << "-------------------------------------------\n";
-
-                printTicket(nama, umur, tribun, zona, metodebayar,  print, jumlahTiket);
+                printTicket(nama, umur, tribun, zona, metodebayar, print, jumlahTiket, kursi, metodeBayarDetail);
             } else {
                 cout << "MAAF TIDAK ADA JADWAL DI WAKTU TERSEBUT\n";
             }
